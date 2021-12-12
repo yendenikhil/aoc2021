@@ -31,7 +31,7 @@ const traverse = (queue: Path[], maxVisits: number): number => {
   const distinctPaths: Set<string> = new Set();
   while (queue.length > 0) {
     // if (counter > 90) break
-    const curr = queue.shift();
+    const curr = queue.pop()
     // p({curr})
     if (!curr) break;
     const { p: pp, visited } = curr;
@@ -69,5 +69,9 @@ const traverse = (queue: Path[], maxVisits: number): number => {
 
 const queue1 = lines.filter((e) => e[0] === "start").map(newpath);
 const queue2 = lines.filter((e) => e[0] === "start").map(newpath);
+console.time('a')
 p(traverse(queue1, 1));
+console.timeLog('a')
 p(traverse(queue2, 2));
+console.timeEnd('a')
+
