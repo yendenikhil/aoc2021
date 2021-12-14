@@ -9,7 +9,7 @@ for (let line of lines) {
 }
 
 const folds: [string, number][] = lines.slice(lines.indexOf("") + 1).map(
-  (line) => line.replace("fold along ", "").split("=")
+  (line) => line.replace("fold along ", "").split("="),
 ).map(([a, b]) => [a, parseInt(b)]);
 let p1 = dots.map((e) => e.slice());
 const p1set: Set<string> = new Set();
