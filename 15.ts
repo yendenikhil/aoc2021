@@ -20,7 +20,7 @@ const bigrow: number[][] = tile.map(
     ...line.map(inc2),
     ...line.map(inc3),
     ...line.map(inc4),
-  ]
+  ],
 );
 const biggraphraw: number[][] = [
   ...bigrow,
@@ -40,25 +40,39 @@ const neighbors = (graph: Map<string, number>, len: number) =>
       .filter(([dr, dc]) => dr >= 0 && dr < len && dc >= 0 && dc < len)
       .map(([dr, dc]) => [k(dr, dc), graph.get(k(dr, dc)) ?? 0]);
   };
-const smallestNotVisited = (visited: Set<string>) =>
-  (dist: Map<string, number>): string => {
-    let min = Infinity;
-    let key = "";
-    dist.forEach((v, k) => {
-      if (!visited.has(k) && min > v) {
-        min = v;
-        key = k;
+class PQE {
+  e: string;
+  prio: number;
+  constructor(e: string, prio: number) {
+    this.e = e;
+    this.prio = prio;
+  }
+}
+class PQ {
+  items: PQE[];
+  constructor() {
+    this.items = [];
+  }
+  enqueue(e: string, prio: number) {
+    const ele = new PQE(e, prio);
+    let contains = false;
+    for (let i = 0; i < this.items.length; i++) {
+      if (ele.prio > this.items[i].prio) {
+        contains = true;
+        this.items.splice(i, 0, ele);
+        break;
       }
-    });
-    if (min === Infinity) {
-      dist.forEach((v, k) => {
-        if (v < Infinity && !visited.has(k)) {
-          p({ k, v });
-        }
-      });
     }
-    return key;
-  };
+    if (!contains) this.items.push(ele);
+  }
+  isEmpty() {
+    return this.items.length === 0;
+  }
+  dequeue() {
+    if (this.isEmpty()) throw new Error("Empty");
+    return this.items.pop();
+  }
+}
 
 const graph: Map<string, number> = new Map();
 const biggraph: Map<string, number> = new Map();
@@ -92,16 +106,20 @@ const dijkstra = (
   len: number,
 ) => {
   const visited: Set<string> = new Set();
-  const smallest = smallestNotVisited(visited);
   const dist: Map<string, number> = new Map();
+  const queue = new PQ();
+  queue.enqueue(k(0, 0), 0);
   graph.forEach((v, k) => dist.set(k, Infinity));
   dist.set(k(0, 0), 0);
-  while (visited.size < dist.size) {
-    const curr = smallest(dist);
-    const currweight = dist.get(curr) ?? Infinity;
+  while (!queue.isEmpty()) {
+    // if(visited.size % 100 === 0) p(visited.size)
+    const curr = queue.dequeue();
+    // p(curr)
+    if (!curr) break;
+    const currweight = curr.prio;
     // p({curr, currweight})
-    visited.add(curr);
-    const es = edges.get(curr);
+    visited.add(curr.e);
+    const es = edges.get(curr.e);
     if (!es) {
       p("ERROR");
       break;
@@ -110,6 +128,7 @@ const dijkstra = (
       const oldval = dist.get(k) ?? Infinity;
       if ((currweight + w) < oldval) {
         dist.set(k, currweight + w);
+        queue.enqueue(k, currweight + w);
       }
     });
   }
