@@ -35,7 +35,7 @@ const dk = (k: string): number[] => JSON.parse(k).map(Number);
 
 const neighbors = (graph: Map<string, number>, len: number) =>
   ([r, c]: number[]): [string, number][] => {
-    return [[-1, 0], [1, 0], [0, -1], [0, 1]]
+    return [[-1, 0], [1, 0], [0, 1]]
       .map(([dr, dc]) => [r + dr, c + dc])
       .filter(([dr, dc]) => dr >= 0 && dr < len && dc >= 0 && dc < len)
       .map(([dr, dc]) => [k(dr, dc), graph.get(k(dr, dc)) ?? 0]);
